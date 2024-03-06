@@ -31,13 +31,15 @@ class Module:
 
     def train(self) -> None:
         "Set the mode of this module and all descendent modules to `train`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        self.training = True
+        for module in list(self.modules()):
+            module.train()
 
     def eval(self) -> None:
         "Set the mode of this module and all descendent modules to `eval`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        self.training = False
+        for module in list(self.modules()):
+            module.eval()
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """
@@ -47,13 +49,25 @@ class Module:
         Returns:
             The name and `Parameter` of each ancestor parameter.
         """
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        param_list: Sequence[Tuple[str, Parameter]] = []
+        p: Dict[str, Parameter] = self.__dict__["_parameters"]
+        m: Dict[str, Module] = self.__dict__["_modules"]
+        for name, param in p.items():
+            param_list.append((name, param))
+        for name, module in m.items():
+            for param_name, param in module.named_parameters():
+                param_list.append((name + "." + param_name, param))
+        return param_list
 
     def parameters(self) -> Sequence[Parameter]:
         "Enumerate over all the parameters of this module and its descendents."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        param_list: Sequence[Parameter] = []
+        p: Dict[str, Parameter] = self.__dict__["_parameters"]
+        for param in list(p.values()):
+            param_list.append(param)
+        for module in list(self.modules()):
+            param_list.extend(module.parameters())
+        return param_list
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """
